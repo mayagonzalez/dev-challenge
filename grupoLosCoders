@@ -1,0 +1,44 @@
+import json
+from urllib.request import urlopen
+
+from string import Template
+import smtplib
+# import necessary packages
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+url = ["https://images.tcdn.com.br/dev-challenge/cart/4rashtk3sdquptms4md2q2h485.json", 
+       "https://images.tcdn.com.br/dev-challenge/cart/huni2lib7i0hkbie6vvg7n46t4.json", 
+       "https://images.tcdn.com.br/dev-challenge/cart/kobq972itl2rqugoa5v2k7e3j7.json",
+       "https://images.tcdn.com.br/dev-challenge/cart/qami6pqhjbvgqfh7qqmh4sdud2.json",
+       "https://images.tcdn.com.br/dev-challenge/cart/teh1jg167q6k50o2ejermke7u5.json"]
+
+for j in url:
+  response = urlopen(j)
+  data_json = json.loads(response.read())
+  products = []
+
+  for i in data_json:
+    email = i['Cart']['email']
+    product_name = i['Cart']['product_name']
+    price = i['Cart']['price']
+    product_url = i['Cart']['product_url']['https']
+    product_image = i['Cart']['product_image']['https']
+    products.append([product_name, product_image, price, product_url])
+
+    email_title = 'Ops! Algumas coisas estão aguardando no seu carrinho'
+
+    email_body = "Um carrinho também se sente abandonado! 😢 /n Esperamos que você esteja bem! Estes produtos incríveis ainda estão esperando por você. /n Não perca a oportunidade de levar para casa esses produtos com 5% de desconto."
+    
+    for p in products:
+      email_products = "/n {product_image} /n {product_name} /n {price} /n {product_url}".format(
+      product_image=p[1],
+      product_name=p[0],
+      price=p[2],
+      product_url=p[3])
+
+
+  full_body = email_body + email_products
+
+  print(email_title)
+  print(full_body)
